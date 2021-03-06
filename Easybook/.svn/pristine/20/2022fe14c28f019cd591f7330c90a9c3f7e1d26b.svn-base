@@ -1,0 +1,14 @@
+package com.easybook.main.data;
+
+import ca.senecacollege.prg556.limara.dao.MaterialReservationDAO;
+
+// Darien May
+
+public class MaterialReservationDAOFactory {
+
+	public static MaterialReservationDAO getMaterialReservationDAO() {
+		
+		return new MaterialReservationData();
+	}
+
+}

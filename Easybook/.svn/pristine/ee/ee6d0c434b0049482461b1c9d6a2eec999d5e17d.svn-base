@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jsp/jstl/core" version="2.0">
+    <jsp:directive.page language="java" />
+
+<!-- Darien May -->
+
+<ul class="menubar">
+  <li class="menubar"><a class="menubar" href="reservematerials.jspx">Reserve</a></li>
+  <li class="menubar"><a class="menubar" href="showmaterialreservations.jspx">Active reservations</a></li>
+  <li class="menubar" style="float:right"><a class="menubar" href="logout.jspx">Log out</a></li>
+  <li class="menu-info" style="float:right">Number of materials reserved: <c:out value="${numReservations}" /> </li>
+  <li class="menu-info" style="float:right">Logged in as <c:out value="${acctOwner.getFirstName}" /> <c:out value="${acctOwner.getLastName}" /></li>
+</ul>
+
+</jsp:root>

@@ -1,0 +1,13 @@
+package ca.on.senecac.prg556.common;
+
+
+/**
+ * A tag interface that identifies a SubmitButtonAction enumeration.
+ *  
+ * @author 	Wayne Bryan
+ * @version %I% %G%
+ *
+ */
+public interface SubmitButtonAction
+{
+}

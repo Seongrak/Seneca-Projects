@@ -1,0 +1,83 @@
+package com.easybook.main;
+
+//Seongrak Choi
+import java.io.IOException;
+import java.sql.SQLException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import ca.on.senecac.prg556.common.StringHelper;
+import ca.senecacollege.prg556.limara.bean.AccountOwner;
+import ca.senecacollege.prg556.limara.dao.AccountOwnerDAO;
+
+import com.easybook.main.data.AccountOwnerDAOFactory;
+
+/**
+ * Servlet Filter implementation class LibraryLoginFilter
+ */
+
+public class LibraryLoginFilter implements Filter {
+
+    /**
+     * Default constructor. 
+     */
+    public LibraryLoginFilter() {
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy() {
+		// TODO Auto-generated method stub
+	}
+
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
+		// TODO Auto-generated method stub
+		// place your code here
+		
+		HttpServletRequest request = (HttpServletRequest)req;
+		HttpServletResponse response = (HttpServletResponse)resp;
+		try
+		{
+			String username = request.getParameter("username");
+			String password = request.getParameter("password");
+			if ("POST".equals(request.getMethod()) && StringHelper.isNotNullOrEmpty(username) && StringHelper.isNotNullOrEmpty(password))
+			{
+				AccountOwner user = AccountOwnerDAOFactory.getAccountOwnerDAO().validateAccountOwner(username, password);
+				if (user != null)
+				{
+					// let me know when you save the AccountOwner object to a session-scoped attribute so I can update AccountAccessFilter
+					response.sendRedirect(request.getContextPath() + "/"); // redirect to context root folder
+					return;
+				}
+				else
+					request.setAttribute("unsuccessfulLogin", Boolean.TRUE);
+			}
+			chain.doFilter(req, resp); // continue on to login.jspx
+		}
+		catch (SQLException sqle)
+		{
+			throw new ServletException(sqle);
+		}
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException {
+		// TODO Auto-generated method stub
+	}
+
+}

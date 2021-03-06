@@ -1,0 +1,39 @@
+package com.easybook.main.data;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import ca.senecacollege.prg556.limara.bean.Material;
+import ca.senecacollege.prg556.limara.dao.MaterialReservationDAO;
+
+class MaterialReservationData implements MaterialReservationDAO {
+
+	public MaterialReservationData() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Material reserveMaterial(int accountOwnerId, String materialId) throws SQLException {
+		// For stage 2, this method simply calls the MaterialDAO.getMaterial method and returns the Material object returned by that method
+		Material mat = MaterialDAOFactory.getMaterialDAO().getMaterial(materialId);
+		return mat;
+	}
+	
+	public void cancelMaterialReservation(int accountOwnerId, String materialId) throws SQLException {
+		//stage 2: do nothing
+	}
+	
+	public Material getMaterialReservation(int accountOwnerId, String materialId) throws SQLException {
+		// For stage 2, this method simply calls the MaterialDAO.getMaterial method and returns the Material object returned by that method
+		Material mat = MaterialDAOFactory.getMaterialDAO().getMaterial(materialId);
+		return mat;
+	}
+	
+	public List<Material> getMaterialReservations(int accountOwnerId) throws SQLException {
+		List<Material> matList = new ArrayList<Material>();
+		// TODO change placeholder material IDs
+		matList.add(MaterialDAOFactory.getMaterialDAO().getMaterial("aaa"));
+		matList.add(MaterialDAOFactory.getMaterialDAO().getMaterial("bbb"));
+		return matList;
+	}
+}

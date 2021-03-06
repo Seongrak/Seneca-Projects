@@ -1,0 +1,51 @@
+package ca.on.senecac.prg556.common;
+
+import javax.servlet.ServletException;
+
+public class NoCookieException extends ServletException
+{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Constructs a NoCookieException with no detail message.
+	 */
+	public NoCookieException()
+	{
+	}
+
+	/**
+	 * Constructs a NoCookieException with the specified detail message.
+	 *
+	 * @param message	the detail message
+	 */
+	public NoCookieException(String message)
+	{
+		super(message);
+	}
+
+	/**
+	 * Constructs a NoCookieException with the specified root cause.
+	 *
+	 * @param rootCause	the root cause
+	 */
+	public NoCookieException(Throwable rootCause)
+	{
+		super(rootCause);
+	}
+
+	/**
+	 * Constructs a NoCookieException with the specified detail message and root cause.
+	 *
+	 * @param message	the detail message
+	 * @param rootCause	the root cause
+	 */
+	public NoCookieException(String message, Throwable rootCause)
+	{
+		super(message, rootCause);
+	}
+
+}

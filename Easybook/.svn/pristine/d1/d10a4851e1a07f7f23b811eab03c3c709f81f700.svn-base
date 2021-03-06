@@ -1,0 +1,211 @@
+package ca.on.senecac.prg556.common;
+
+/** 
+ * A collection of String manipulation functions.
+ * 
+ * @author 	Wayne Bryan
+ * @version %I% %G%
+ *
+ */
+public class StringHelper
+{
+	/**
+	 * Returns true if, and only if, value is <code>null</code> or has a string length of 0.
+	 * 
+	 * @param 	value	the <code>String</code> to be checked
+	 * @return	<code>true</code> if value is <code>null</code> or has a string length of 0, 
+	 * 			otherwise <code>false</code>
+	 * @see		#isNotNullOrEmpty(String)
+	 */
+	public static boolean isNullOrEmpty(String value)
+	{
+		return null == value || value.isEmpty();
+	}
+
+	/**
+	 * Returns true if, and only if, value is not <code>null</code> and has a string length greater than 0.
+	 * 
+	 * @param 	value	the <code>String</code> to be checked
+	 * @return	<code>true</code> if value is not <code>null</code> and has a string length greater than 0, 
+	 * 			otherwise <code>false</code>
+	 * @see		#isNullOrEmpty(String)
+	 */
+	public static boolean isNotNullOrEmpty(String value)
+	{
+		return !isNullOrEmpty(value);
+	}
+	
+	/**
+	 * Returns a String that ends with <code>suffix</code>.  If the original String
+	 * already ends with <code>suffix</code>, then the original String is returned.
+	 * Otherwise, a new <code>String</code> object is created by appending the <code>suffix</code>
+	 * to the original String.  If either <code>value</code> or <code>suffix</code> is <code>null</code>
+	 * the original <code>value</code> is returned.
+	 *  
+	 * @param 	value	a <code>String</code>
+	 * @param 	suffix	a <code>String</code> with the suffix characters
+	 * @return	a <code>String</code> that ends with the <code>suffix</code> characters.  If either
+	 * 			<code>value</code> or <code>suffix</code> is <code>null</code> the original <code>value</code>
+	 * 			is returned.
+	 */
+	public static String stringSuffix(String value, String suffix)
+	{
+		if (null == value || null == suffix || value.endsWith(suffix))
+			return value;
+		else
+			return value + suffix;
+	}
+
+	/**
+	 * Returns a String that starts with <code>prefix</code>.  If the original String
+	 * already starts with <code>prefix</code>, then the original String is returned.
+	 * Otherwise, a new <code>String</code> object is created by appending the original
+	 * String to <code>prefix</code>.  If either <code>value</code> or <code>prefix</code> is <code>null</code>
+	 * the original <code>value</code> is returned.
+	 *  
+	 * @param 	value	a <code>String</code>
+	 * @param 	prefix	a <code>String</code> with the prefix characters
+	 * @return	a <code>String</code> that begins with the <code>prefix</code> characters.  If either
+	 * 			<code>value</code> or <code>prefix</code> is <code>null</code> the original <code>value</code>
+	 * 			is returned.
+	 */
+	public static String stringPrefix(String value, String prefix)
+	{
+		if (null == value || null == prefix || value.startsWith(prefix))
+			return value;
+		else
+			return prefix + value;
+	}
+	
+	/**
+	 * Returns a String with any leading instances of <code>trim</code> removed.  If either
+	 * <code>value</code> or <code>trim</code> is <code>null</code> or empty string the original
+	 * <code>value</code> is returned.
+	 *   
+	 * @param 	value	the <code>String</code> to trim
+	 * @param 	trim	the <code>String</code> of characters to be trimmed
+	 * @return	a <code>String</code> with any leading instances of <code>trim</code> removed.  If either
+	 * 			<code>value</code> or <code>trim</code> is <code>null</code> or empty string the original
+	 * 			<code>value</code> is returned.
+	 * @see		#rightTrim(String, String)
+	 */
+	public static String leftTrim(String value, String trim)
+	{
+		if (isNullOrEmpty(value) || isNullOrEmpty(trim))
+			return value;
+		else
+		{
+			while(value.startsWith(trim))
+				value = value.substring(trim.length());
+			return value;
+		}
+	}
+	
+	/**
+	 * Returns a String with any trailing instances of <code>trim</code> removed.  If either
+	 * <code>value</code> or <code>trim</code> is <code>null</code> or empty string the original
+	 * <code>value</code> is returned.
+	 *   
+	 * @param 	value	the <code>String</code> to trim
+	 * @param 	trim	the <code>String</code> of characters to be trimmed
+	 * @return	a <code>String</code> with any trailing instances of <code>trim</code> removed.  If either
+	 * 			<code>value</code> or <code>trim</code> is <code>null</code> or empty string the original
+	 * 			<code>value</code> is returned.
+	 * @see		#leftTrim(String, String)
+	 */
+	public static String rightTrim(String value, String trim)
+	{
+		if (isNullOrEmpty(value) || isNullOrEmpty(trim))
+			return value;
+		else
+		{
+			while(value.endsWith(trim))
+				value = value.substring(0, value.length() - trim.length());
+			return value;
+		}
+	}
+	
+	/**
+	 * Returns a copy of the original String with any instances of &amp;, &lt;, &gt;, &quot;, or &#39;
+	 * replaced with their corresponding character entities.  Specifically,
+	 * &amp; is replaced with &amp;amp;, &lt; is replaced with &amp;lt;, &gt; is replaced with
+	 * &amp;gt;, &quot; is replaced with &amp;quot;, and &#39; is replaced with &amp;#39;.
+	 * <p>
+	 * If <code>value</code> is <code>null</code> or empty string, then the original 
+	 * <code>value</code> is returned.
+	 *  
+	 * @param 	value	a <code>String</code>
+	 * @return	a copy of the original String with any instances of &amp;, &lt;, &gt;, &quot;, or &#39;
+	 * 			replaced with their corresponding character entities.  If <code>value</code> is <code>null</code>
+	 * 			or empty string, then the original <code>value</code> is returned.
+	 */
+	public static String xmlEscape(String value)
+	{
+		if (isNotNullOrEmpty(value))
+		{
+			// Replace & with &amp;
+			// Replace < with &lt;
+			// Replace > with &gt;
+			// Replace " with &quot;
+			// Replace ' with &#39;
+			value = value.replace("&", "&amp;");
+			value = value.replace("<", "&lt;");
+			value = value.replace(">", "&gt;");
+			value = value.replace("\"", "&quot;");
+			value = value.replace("'", "&#39;");
+		}
+		return value;
+	}
+	
+	/**
+	 * Returns a String representing the concatenation of the elements of <code>values</code> separated
+	 * by <code>delimiter</code>.  If <code>values</code> is null or contains no elements, an empty string
+	 * is returned.  Any <code>null</code> elements of <code>values</code> are ignored.  If
+	 * <code>delimiter</code> is <code>null</code>, empty string is used as the delimiter instead.
+	 * 
+	 * @param 	values	an array of <code>String</code> elements to concatenate
+	 * @param 	delimiter	the <code>String</code> to insert between concatenated elements
+	 * @return	a String representing the concatenation of the elements of <code>values</code> separated
+	 * 			by <code>delimiter</code>
+	 */
+	public static String join(String[] values, String delimiter)
+	{
+		// skips null elements
+		if (values != null && values.length > 0)
+		{
+			// can't have a null delimiter
+			if (delimiter == null)
+			{
+				delimiter = "";
+			}
+
+			StringBuffer sb = new StringBuffer();
+			int index = 0;
+
+			// append first non-null element
+			while (index < values.length)
+			{
+				if (values[index] != null)
+				{
+					sb.append(values[index++]);
+					break;
+				}
+				index++;
+			}
+
+			// append remaining non-null elements prepended with delimiter
+			while (index < values.length)
+			{
+				if (values[index] != null)
+				{
+					sb.append(delimiter);
+					sb.append(values[index]);
+				}
+				index++;
+			}
+			return sb.toString();
+		}
+		else
+			return "";
+	}
+}

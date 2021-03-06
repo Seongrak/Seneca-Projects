@@ -1,0 +1,56 @@
+package ca.on.senecac.prg556.common;
+
+import javax.servlet.http.Cookie;
+
+/** 
+ * A collection of functions for handling HTTP cookies.
+ * 
+ * @author 	Wayne Bryan
+ * @version %I% %G%
+ *
+ */
+public class CookieHelper 
+{
+	/**
+	 * Searches the <code>cookies</code> array for a cookie with the specified name and returns it.
+	 * If the <code>cookies</code> array is <code>null</code> or the cookie <code>name</code> is 
+	 * <code>null</code> or empty string, then <code>null</code> is returned.
+	 * 
+	 * @param 	name	the name of the cookie to find
+	 * @param 	cookies	the <code>Cookie</code> array to search
+	 * @return	the first cookie with the name being sought or <code>null</code> if not found
+	 */
+	public static Cookie findCookie(String name, Cookie[] cookies)
+	{
+		if (null ==  cookies || null == name || name.length() == 0)
+			return null;
+		else
+		{
+			for(Cookie cookie : cookies)
+			{
+				if (name.equals(cookie.getName()))
+					return cookie;
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * Sets the cookie's max age to the specified <code>seconds</code>.  If <code>seconds</code>
+	 * does not represent an integer, the max age is simply not set (that is, no exception occurs).
+	 * 
+	 * @param 	cookie	a <code>Cookie</code>
+	 * @param 	seconds	a <code>String</code> representing the max age to be set (in seconds)
+	 */
+	public static void ageCookie(Cookie cookie, String seconds)
+	{
+		try
+		{
+			cookie.setMaxAge(Integer.parseInt(seconds));
+		}
+		catch (NumberFormatException nfe)
+		{
+			// ignore
+		}
+	}
+}

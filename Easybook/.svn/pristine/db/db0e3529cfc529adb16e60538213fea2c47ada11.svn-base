@@ -1,0 +1,117 @@
+package ca.on.senecac.prg556.common;
+
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Verifies that the HTTP client supports cookies.
+ *
+ * @author 	Wayne Bryan
+ * @version %I% %G%
+ *
+ */
+public class CookieTestFilter implements Filter
+{
+	private String uriCookieTest;
+
+	/**
+	 * Default constructor.
+	 */
+	public CookieTestFilter()
+	{
+		
+	}
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy()
+	{
+		
+	}
+
+	/**
+	 * Throws an exception if the HTTP client does not support cookies.
+	 * <p>
+	 * The filter works by first checking if a new HTTP session has just been created.  If so,
+	 * the filter will save the original requested URL in the newly created session and redirect
+	 * the browser to a fictitious cookie test URL. When the request for the cookie test URL comes in,
+	 * the filter intercepts the request and verifies that the session is not still new. The filter will
+	 * then redirect the user to the original URL that the user had requested. Note that this redirection
+	 * maintains any GET method encoded parameters, but will not maintain any POST method parameters.
+	 * <p>
+	 * The fictitious URL is specified in the filter initialization parameter <code>cookie-test</code>.
+	 * The fictitious URL must be included in the filter's URL mapping so that the filter will intercept
+	 * the request.  The filter's URL mapping should also include any content that requires cookie support
+	 * by the HTTP client (including session cookies).
+	 *
+	 * @throws	NoCookieException	if HTTP client does not support cookies
+	 */
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException
+	{
+		String uriCookieTest = getUriCookieTest();
+		if (StringHelper.isNotNullOrEmpty(uriCookieTest))
+		{
+			HttpServletRequest request = (HttpServletRequest)req;
+			HttpSession session = request.getSession();
+			String uri = request.getRequestURI();
+			String contextPath = request.getContextPath();
+
+			// are we at the cookie test uri?
+			if (uri.equals(contextPath + uriCookieTest))
+			{
+				if (session.isNew())
+				{ // shouldn't be a new session unless cookies are not supported
+					throw new NoCookieException("Browser cookie support required");
+				}
+				else
+				{ // redirect client to saved uri
+					String uriPush = (String)session.getAttribute("uri-push");
+					session.removeAttribute("uri-push");
+					((HttpServletResponse)resp).sendRedirect(uriPush);
+					return;
+				}
+			}
+			else
+			{ // not at the cookie test uri, so might be first time -- check if session started
+				if (session.isNew())
+				{ // new session -- save uri and redirect to cookie test
+					String queryString = request.getQueryString();
+					String uriPush;
+					if (StringHelper.isNullOrEmpty(queryString))
+						uriPush = request.getRequestURI();
+					else
+						uriPush = request.getRequestURI() + "?" + queryString;
+					session.setAttribute("uri-push", uriPush);
+					((HttpServletResponse)resp).sendRedirect(contextPath + uriCookieTest);
+					return;
+				}
+			}
+		}
+
+		// If none of the conditions above, then carry on along the filter chain
+		chain.doFilter(req, resp);
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException
+	{
+		uriCookieTest = StringHelper.stringPrefix(fConfig.getInitParameter("cookie-test"), "/");
+	}
+
+	private synchronized String getUriCookieTest()
+	{
+		return uriCookieTest;
+	}
+}

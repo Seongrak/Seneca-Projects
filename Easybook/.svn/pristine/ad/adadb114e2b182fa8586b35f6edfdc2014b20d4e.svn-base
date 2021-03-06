@@ -1,0 +1,133 @@
+package ca.dmay.easybook;
+import ca.senecacollege.prg556.limara.bean.*;
+import ca.dmay.easybook.data.MaterialReservationDAOFactory;
+import ca.on.senecac.prg556.common.*;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.easybook.main.BadRequestException;
+import com.easybook.main.data.MaterialDAOFactory;
+
+// Darien May
+
+/**
+ * Servlet Filter implementation class ReserveMaterialsFilter
+ */
+//Filter specified in web.xml
+//@WebFilter("/ReserveMaterialsFilter")
+public class ReserveMaterialsFilter implements Filter {
+
+    /**
+     * Default constructor. 
+     */
+    public ReserveMaterialsFilter() {
+
+    }
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy() {
+
+	}
+
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest req = (HttpServletRequest)request; // cast from ServletRequest back to HttpServletRequest
+		HttpServletResponse resp = (HttpServletResponse)response;
+		
+		String matName = "", matType = "", id = "";
+		if ("POST".equals(req.getMethod()))
+		{
+			// if there is anything in matSelect, process it with xmlEscape and save it back as a request-scoped attribute
+			if (request.getParameter("matType") != null) {
+				matType = request.getParameter("matType");
+				request.setAttribute("matType", StringHelper.xmlEscape(matType));
+			}
+			// if there is anything in materialName, process it with xmlEscape and save it back as a request-scoped attribute
+			if (request.getParameter("materialName") != null && request.getParameter("materialName").length() > 0) {
+				matName = request.getParameter("materialName");
+				request.setAttribute("matName", StringHelper.xmlEscape(matName));
+			}
+			else {
+				// If the type is all and the title is empty, the method should send a request attribute (to be used by reservematerials.jspx) indicating that an invalid empty title was specified.
+				if ("all".equals(matType)) {
+					request.setAttribute("AllAndEmpty", true);
+				}
+			}				
+		}
+		
+		id = request.getParameter("id");
+		
+		try {
+			// only execute if the reserve button was clicked
+			if (StringHelper.isNotNullOrEmpty(request.getParameter("reserve"))) {
+				
+				if (null == id || id.length() == 0)
+				{
+					throw new BadRequestException("Not a valid material ID.");
+				}
+				// try to look up a material with that id to see if it exists. if not it will throw a SQLException
+				Material mat = MaterialDAOFactory.getMaterialDAO().getMaterial(id);
+				if (null == mat)
+				{
+					throw new BadRequestException(String.format("Material ID %s is not valid.", id));
+				}
+				// reserve the material for account owner with account owner id from sessions scope
+				AccountOwner ao = (AccountOwner)(req.getSession().getAttribute("accountOwner"));
+				MaterialReservationDAOFactory.getMaterialReservationDAO().reserveMaterial(ao.getId(), id);
+				
+				resp.sendRedirect(req.getContextPath() + "/");
+				return;
+			}
+		}
+		catch (SQLException e){
+			throw new BadRequestException(e);
+		}		
+		
+		
+		try {
+			// if the material type "all" was specified, we need to send null to the getAvailableMaterials method
+			if ("all".equals(matType))
+			{
+				matType = null;
+			}
+			if (null == matName || matName.length() == 0)
+			{
+				matName = null;
+			}
+			// get a list of available materials matching the name and type, and save it to request-scoped attribute materialList
+			List<Material> matList = MaterialDAOFactory.getMaterialDAO().getAvailableMaterials(matName, matType);
+			request.setAttribute("materialList", matList);
+		}
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		
+		// pass the request along the filter chain
+		chain.doFilter(request, response);
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException {
+
+	}
+
+}

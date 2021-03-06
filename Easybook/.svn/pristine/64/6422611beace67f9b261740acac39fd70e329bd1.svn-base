@@ -1,0 +1,30 @@
+package com.easybook.main.data;
+
+import java.sql.SQLException;
+
+class MaterialReservationData {
+
+	public MaterialReservationData() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public Material reserveMaterial(int accountOwnerId, String materialId) throws SQLException {
+		mDAO = MaterialDAO.getMaterial();
+		return mDAO;
+	}
+	
+	public void cancelMaterialReservation(int accountOwnerId, String materialId) throws SQLException {
+		//stage 2: do nothing
+	}
+	
+	public Material getMaterialReservation(int accountOwnerId, String materialId) throws SQLException {
+		mDAO = MaterialDAO.getMaterial();
+		return mDAO;
+	}
+	
+	public List<Material> getMaterialReservations(int accountOwnerId) throws SQLException {
+		List<Material> matList = new List<Material>();
+		//add two library material objects to list
+		return matList;
+	}
+}

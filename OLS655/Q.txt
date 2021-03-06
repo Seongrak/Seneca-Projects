@@ -1,0 +1,12 @@
+Extreme Avocation Training Application Program
+Overall Project Summary
+An extreme avocation training school prides itself in being one of the few places extreme avocation advocates can go to learn how to do such avocations as Volcano bungee jumping, Group sky diving, Race car driving, Wingsuit BASE jumping, and the like. Applicants cannot apply for the same extreme avocation more than once per year. Each extreme avocation has limited enrollment.
+
+Develop an ASP.NET program that processes extreme avocation (exav) training applications for the school. The program provides web forms and will provide navigation between them through the use of buttons and links.
+When the program starts, the applicant will be presented with a login screen. The applicant will provide his/her Oracle login information. The program will authenticate the credentials by logging into Oracle. After logging in, the applicant is presented with the Exav Applications page.
+
+Exav Applications Page
+The exav applications page contains a list of extreme avocations for which the applicant has already applied. Any of these applications can be withdrawn by clicking the corresponding Withdraw Application button. To make a new exav application, the applicant can click on an Apply for Extreme Avocation Training button or link to redirect to the Exav Training Application page. A Log Out button or link on this page allows the applicant to log out. The exav applications page is the starting (home) page for the program.
+
+Exav Training Application Page
+The exav training application page allows the applicant to search for available extreme avocations for a new training application by specifying the desired month (JAN, FEB, MAR, through DEC) of the exav training for which he/she is applying and then clicking the Search button. When the applicant clicks the Search button, the search results display a list of extreme avocations that are available in the desired month. The applicant can apply for any listed extreme avocation by clicking the corresponding Apply button. To return to the Exav Applications page, the applicant can click a Current Exav Applications button or link

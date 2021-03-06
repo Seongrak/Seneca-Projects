@@ -1,0 +1,5 @@
+C:\Users\MATTHEW\Documents\Visual Studio 2012\Projects\ExAvocateprog15(16)\ExAvocateprog15\bin\ExAvocateprog15.dll
+C:\Users\MATTHEW\Documents\Visual Studio 2012\Projects\ExAvocateprog15(16)\ExAvocateprog15\bin\ExAvocateprog15.pdb
+C:\Users\MATTHEW\Documents\Visual Studio 2012\Projects\ExAvocateprog15(16)\ExAvocateprog15\obj\Debug\ExAvocateprog15.csprojResolveAssemblyReference.cache
+C:\Users\MATTHEW\Documents\Visual Studio 2012\Projects\ExAvocateprog15(16)\ExAvocateprog15\obj\Debug\ExAvocateprog15.dll
+C:\Users\MATTHEW\Documents\Visual Studio 2012\Projects\ExAvocateprog15(16)\ExAvocateprog15\obj\Debug\ExAvocateprog15.pdb

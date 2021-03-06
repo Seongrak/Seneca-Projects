@@ -1,0 +1,41 @@
+package com.easybook.main.data;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import ca.senecacollege.prg556.limara.bean.Material;
+import ca.senecacollege.prg556.limara.dao.MaterialDAO;
+
+//Seongrak Choi
+class MaterialData implements MaterialDAO {
+
+	public MaterialData() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public List<Material> getAvailableMaterials(String title, String type)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		
+		// simply call MaterialData.getMaterial method X twice
+		return null;
+	}
+
+	@Override
+	public Material getMaterial(String materialID) throws SQLException {
+		// TODO Auto-generated method stub
+		
+		/*
+		 * For stage 2, this method should create one of three possible library material objects 
+		 * based on the material id provided. The method will compare the material id parameter 
+		 * against three material ids hardcoded into the method. If the specified material id 
+		 * does not match up with any of the hard coded values, then the method should return null.
+		 *  Otherwise, the method should create and return a library material object using the 
+		 *  given material id and hardcoded title and type values. The library material type should 
+		 *  be a value like Book, Audio, Video, etc.
+		 */
+		return null;
+	}
+
+}

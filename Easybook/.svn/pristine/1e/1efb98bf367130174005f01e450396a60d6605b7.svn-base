@@ -1,0 +1,60 @@
+package com.easybook.main;
+
+import java.io.IOException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+
+/**
+ * Servlet Filter implementation class LimaraMenuFilter
+ */
+//Filter specified in web.xml
+//@WebFilter("/LimaraMenuFilter")
+public class LimaraMenuFilter implements Filter {
+
+    /**
+     * Default constructor. 
+     */
+    public LimaraMenuFilter() {
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy() {
+		// TODO Auto-generated method stub
+	}
+
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		
+		//public AccountOwner getAccountOwner(int id) throws SQLException
+		//TODO: update when you know which int to pass
+		String accountOwnerName = AccountOwnerData.getAccountOwner(1);
+		//TODO: update this var from AccountOwner object
+		int numReserved = 0;
+		
+			
+		request.setAttribute("acctOwnerName", accountOwnerName);
+		request.setAttribute("numReserved", numReserved);
+		
+		
+		// pass the request along the filter chain
+		chain.doFilter(request, response);
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException {
+		// TODO Auto-generated method stub
+	}
+
+}

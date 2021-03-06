@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+		  xmlns:c="http://java.sun.com/jsp/jstl/core" 
+		  xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+		  xmlns:fmt="http://java.sun.com/jsp/jstl/fmt"	
+		  version="2.0">
+		  
+    <jsp:directive.page language="java" contentType="application/xhtml+xml; charset=UTF-8" pageEncoding="UTF-8" />
+    <jsp:output omit-xml-declaration="no"
+        doctype-root-element="html"
+        doctype-public="-//W3C//DTD XHTML 1.1//EN"
+        doctype-system="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" />
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<link rel="stylesheet" href="style.css" type="text/css" />
+<title>Your Reservations</title>
+</head>
+
+
+<body>
+<jsp:include page="limaramenu.jspx" />
+
+<c:choose>
+<c:when test="${MaterialReservation.size() == 0 }"><h2 class="errorText">You have no library material reservations.</h2>
+</c:when>
+<c:otherwise> <h2>Your reservation list:</h2>
+	<c:forEach var = "material" items="${MaterialReservation}">
+	<form action="showmaterialreservations.jspx" method="post">
+		<p class="reservation">
+			Material Title: ${bookingrooms.getTitle()} <br />
+			Material Type: ${bookedroom.getType()}<br/>
+			<input type="hidden" name="materialID" value="${MaterialReservation.getId()}" />
+			<input type="hidden" name="MaterialReservation" value="${MaterialReservation}" />
+			<input name="Cancel" type="submit" value="Cancel" />
+		</p>
+	</form>
+	</c:forEach>
+</c:otherwise>
+</c:choose>
+
+</body>
+</html>
+</jsp:root>

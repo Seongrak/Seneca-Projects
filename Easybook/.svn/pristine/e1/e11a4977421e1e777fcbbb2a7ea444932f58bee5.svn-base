@@ -1,0 +1,74 @@
+package com.easybook.main;
+import com.easybook.main.data.*;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+
+import ca.senecacollege.prg556.limara.bean.*;
+
+/**
+ * Servlet Filter implementation class LimaraMenuFilter
+ */
+
+//Darien May
+
+//Filter specified in web.xml
+//@WebFilter("/LimaraMenuFilter")
+public class LimaraMenuFilter implements Filter {
+
+    /**
+     * Default constructor. 
+     */
+    public LimaraMenuFilter() {
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy() {
+		// TODO Auto-generated method stub
+	}
+
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		
+		int numReserved = 0;
+		//TODO: update when you know which int to pass
+		try {
+			// getting the AccountOwner object and saving it to a request-scoped attribute
+			AccountOwner ao = AccountOwnerDAOFactory.getAccountOwnerDAO().getAccountOwner(1);
+			
+			// get a list of material reservations for account owner with account owner id 1, and save the list and the list size to request-scoped attributes
+			List<Material> reservations = MaterialReservationDAOFactory.getMaterialReservationDAO().getMaterialReservations(1);
+			numReserved = reservations.size();
+			request.setAttribute("acctOwner", ao);
+			request.setAttribute("numReservations", numReserved);
+		}
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+				
+		// pass the request along the filter chain
+		chain.doFilter(request, response);
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException {
+		// TODO Auto-generated method stub
+	}
+
+}

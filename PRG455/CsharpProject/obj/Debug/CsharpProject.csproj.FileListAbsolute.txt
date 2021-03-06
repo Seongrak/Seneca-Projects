@@ -1,0 +1,24 @@
+c:\users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\bin\Debug\CsharpProject.exe.config
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\bin\Debug\CsharpProject.exe
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\bin\Debug\CsharpProject.pdb
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\obj\Debug\CsharpProject.csprojResolveAssemblyReference.cache
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\obj\Debug\CsharpProject.Properties.Resources.resources
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\obj\Debug\CsharpProject.csproj.GenerateResource.Cache
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\obj\Debug\CsharpProject.exe
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\obj\Debug\CsharpProject.pdb
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\obj\Debug\CsharpProject.main_form.resources
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\obj\Debug\CsharpProject.insert_form.resources
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\obj\Debug\CsharpProject.update_form.resources
+C:\Users\rak\documents\visual studio 2015\Projects\CsharpProject\CsharpProject\obj\Debug\CsharpProject.delete_form.resources
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\bin\Debug\CsharpProject.exe.config
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\obj\Debug\CsharpProject.exe
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\obj\Debug\CsharpProject.pdb
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\bin\Debug\CsharpProject.exe
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\bin\Debug\CsharpProject.pdb
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\obj\Debug\CsharpProject.csprojResolveAssemblyReference.cache
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\obj\Debug\CsharpProject.main_form.resources
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\obj\Debug\CsharpProject.insert_form.resources
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\obj\Debug\CsharpProject.update_form.resources
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\obj\Debug\CsharpProject.delete_form.resources
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\obj\Debug\CsharpProject.Properties.Resources.resources
+C:\Users\rak\Desktop\CsharpProject\CsharpProject\obj\Debug\CsharpProject.csproj.GenerateResource.Cache

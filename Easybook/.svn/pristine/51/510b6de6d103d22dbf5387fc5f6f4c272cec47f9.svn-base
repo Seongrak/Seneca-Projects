@@ -1,0 +1,389 @@
+package ca.on.senecac.prg556.common;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.InvalidPropertiesFormatException;
+import java.util.List;
+import java.util.Properties;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Implements the MVC Control filter framework.
+ *
+ * @author 	Wayne Bryan
+ * @version	%I% %G%
+ *
+ */
+public class ControlFilter implements Filter
+{
+	Properties controlFilterMappings = new Properties();
+
+	/**
+	 * Default constructor.
+	 */
+	public ControlFilter()
+	{
+		
+	}
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy()
+	{
+		controlFilterMappings.clear();
+	}
+
+
+	/**
+	 * Maps URL requests to MVC Controls.  Control filter URL mappings are specified in a control filter
+	 * mapping file.  This file is specified in the filter initialization parameter
+	 * <code>control-filter-properties</code> (for example, <code>WEB-INF/control-filter.xml</code>).
+	 * The format of the xml document conforms to the http://java.sun.com/dtd/properties.dtd where the
+	 * <code>entry</code> element's <code>key</code> attribute corresponds to the URL that the control
+	 * is mapped to and the <code>entry</code> element's value is the fully qualified class name of the
+	 * control class.  For example
+	 * <p>
+	 * <code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>
+	 * &lt;!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"&gt;<br>
+	 * &lt;properties&gt;<br>
+	 * 		&lt;comment&gt;Control Filter Mappings&lt;/comment&gt;<br>
+	 * 		&lt;entry key="/myurl.jspx"&gt;my.package.MyControl&lt;/entry&gt;<br>
+	 * &lt;/properties&gt;</code>
+	 * <p>
+	 * Any URL requests for which there is no corresponding control mapped simply continue along the
+	 * filter chain to the next element.
+	 *
+	 * @see Control
+	 */
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException
+	{
+		HttpServletRequest request = (HttpServletRequest)req;
+		String uri = request.getRequestURI();
+		String jspx = uri.substring(uri.lastIndexOf("/"));
+
+		Control control = getControl(jspx);
+
+		if (control != null)
+		{
+			Class<? extends Control> currentControlClass = control.getClass();
+			
+			// Find first superclass that implements Control interface
+			while (Control.class.isAssignableFrom(currentControlClass.getSuperclass()))
+				currentControlClass = currentControlClass.getSuperclass().asSubclass(Control.class);
+			
+
+			Enumeration<String> parameterNames = request.getParameterNames();
+
+			// Get Parameters
+			while (parameterNames.hasMoreElements())
+			{
+				String parameterName = parameterNames.nextElement();
+				
+				if (parameterName.length() > 0)
+				{
+					// Make sure parameter is valid (starts with a lowercase letter)
+					char firstCharacter = parameterName.charAt(0);
+					if (Character.isLetter(firstCharacter) && Character.isLowerCase(firstCharacter))
+					{
+						String mutatorMethodName = String.format("set%c%s", Character.toUpperCase(firstCharacter), parameterName.substring(1));
+
+						// Search for mutator method in currentControlClass
+						Method[] methods = currentControlClass.getDeclaredMethods();
+						for (Method method : methods)
+						{	// Make sure method is public void instance method with the correct method name and one parameter
+							if (Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers()) && mutatorMethodName.equals(method.getName())
+									&& void.class.isAssignableFrom(method.getReturnType()) && 1 == method.getParameterTypes().length)
+							{
+								setParameterValue(request, control, method, parameterName);
+								break;
+							}
+							// Make sure method is public void instance method with the correct method parameter type
+							else if (Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers()) 
+									&& void.class.isAssignableFrom(method.getReturnType()) && 1 == method.getParameterTypes().length
+									&& Enum.class.isAssignableFrom(method.getParameterTypes()[0])
+									&& SubmitButtonAction.class.isAssignableFrom(method.getParameterTypes()[0]) && method.getName().startsWith("set")
+									&& isValidEnum(method.getParameterTypes()[0].asSubclass(Enum.class), parameterName.toUpperCase()))
+							{
+								setSubmitButtonAction(request, control, method, parameterName);
+								break;
+							}
+						}
+					}
+				}
+			}
+			
+			// Call doLogic
+			String controlResponse = control.doLogic((HttpServletRequest)req, (HttpServletResponse)resp);
+			
+			// Set Attributes
+			// Search for accessor method in currentControlClass
+			Method[] methods = currentControlClass.getDeclaredMethods();
+			for (Method method : methods)
+			{	// Make sure method is public void instance method with the correct method name and one parameter
+				if (Modifier.isPublic(method.getModifiers()) && !Modifier.isStatic(method.getModifiers()) && (method.getName().startsWith("get")
+						&& !void.class.isAssignableFrom(method.getReturnType()) || method.getName().startsWith("is") && boolean.class.isAssignableFrom(method.getReturnType())) 
+						&& 0 == method.getParameterTypes().length)
+				{
+					String attributeName;
+					if (method.getName().startsWith("is"))
+						attributeName = String.format("%c%s", Character.toLowerCase(method.getName().charAt(2)), method.getName().substring(3));
+					else
+						attributeName = String.format("%c%s", Character.toLowerCase(method.getName().charAt(3)), method.getName().substring(4));
+						
+					try
+					{
+						request.setAttribute(attributeName, method.invoke(control, (Object[])null));
+					}
+					catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+					{
+						// do nothing
+					}
+				}
+			}
+			
+			if (null == controlResponse)
+			{
+				chain.doFilter(req, resp);
+			}
+			else if (controlResponse.startsWith("R:"))
+			{
+				((HttpServletResponse)resp).sendRedirect(controlResponse.substring(2));
+			}
+			else if (controlResponse.startsWith("D:"))
+			{
+				RequestDispatcher disp = request.getRequestDispatcher(controlResponse.substring(2));
+				disp.forward(req, resp);
+			}
+			//else
+				// do nothing (i.e., return without following the filter chain)
+		}
+		else
+			chain.doFilter(req, resp);
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException
+	{
+		ServletContext servletContext = fConfig.getServletContext();
+		String controlFilterPropertiesFile = fConfig.getInitParameter("control-filter-properties");
+		if (null == controlFilterPropertiesFile)
+		{
+			throw new ServletException("Missing Control Filter Properties File initialization parameter");
+		}
+
+		try
+		{
+			InputStream propsFile = servletContext.getResourceAsStream(controlFilterPropertiesFile);
+			if (null == propsFile)
+			{
+				throw new ServletException("Control Filter Properties File could not be read");
+			}
+			controlFilterMappings.loadFromXML(propsFile);
+		}
+		catch (InvalidPropertiesFormatException ipfe)
+		{
+			throw new ServletException("Control Filter Properties File format is invalid", ipfe);
+		}
+		catch (IOException ioe)
+		{
+			throw new ServletException(ioe);
+		}
+	}
+
+	private Control getControl(String forURL) throws ServletException
+	{
+		String controlClassName = controlFilterMappings.getProperty(forURL);
+		if (null == controlClassName)
+			return null;
+		else
+		{
+			ClassLoader loader = getClass().getClassLoader();
+			try
+			{
+				return loader.loadClass(controlClassName).asSubclass(Control.class).newInstance();
+			}
+			catch (ClassNotFoundException | InstantiationException | IllegalAccessException e)
+			{
+				throw new ServletException(e);
+			}
+		}
+	}
+	
+	private void setSubmitButtonAction(ServletRequest request, Control control, Method mutatorMethod, String parameterName)
+	{
+		try
+		{
+			Class<?> parameterType = mutatorMethod.getParameterTypes()[0];
+			Object parameter = convertParameterToValue(control, parameterName.toUpperCase(), parameterType);
+			if (parameter != null)
+				mutatorMethod.invoke(control, new Object[] { parameter });
+		}
+		catch (Exception e)
+		{
+			request.setAttribute(String.format("%s.exception.%s", this.getClass().getPackage().getName(), parameterName), e);
+			if (null == request.getAttribute(String.format("%s.exception", this.getClass().getPackage().getName())))
+				request.setAttribute(String.format("%s.exception", this.getClass().getPackage().getName()), e);
+		}
+	}
+	
+	private void setParameterValue(ServletRequest request, Control control, Method mutatorMethod, String parameterName)
+	{
+		try
+		{
+			Class<?> parameterType = mutatorMethod.getParameterTypes()[0];
+			if (parameterType.isArray())
+			{
+				Class<?> componentType = parameterType.getComponentType();
+				if (isValidParameterType(componentType))
+				{
+					// Handle array type parameter
+					String[] params = request.getParameterValues(parameterName);
+					Object paramArray = Array.newInstance(componentType, params.length);
+					for (int index = 0; index < params.length; index++)
+					{
+						String param = params[index];
+						if (param.length() > 0 || componentType.isPrimitive())
+						{
+							Object parameter = convertParameterToValue(control, param, componentType);
+							if (parameter != null)
+								Array.set(paramArray, index, parameter);
+						}
+						else
+							Array.set(paramArray, index, null);
+					}
+					mutatorMethod.invoke(control, new Object[] { paramArray });
+				}
+			}
+			else if (List.class.isAssignableFrom(parameterType))
+			{
+				Type[] genericParamTypes = mutatorMethod.getGenericParameterTypes();
+				if (ParameterizedType.class.isInstance(genericParamTypes[0]) && 1 == ParameterizedType.class.cast(genericParamTypes[0]).getActualTypeArguments().length)
+				{
+					Type parameterizedType = ParameterizedType.class.cast(genericParamTypes[0]).getActualTypeArguments()[0];
+					if (Class.class.isInstance(parameterizedType))
+					{
+						Class<?> componentType = Class.class.cast(parameterizedType);
+						if (isValidParameterType(componentType))
+						{
+							// Handle List type parameter
+							String[] params = request.getParameterValues(parameterName);
+							Object paramList;
+							if (List.class.equals(parameterType))
+								paramList = new ArrayList();
+							else
+								paramList = parameterType.newInstance();
+							for (int index = 0; index < params.length; index++)
+							{
+								String param = params[index];
+								if (param.length() > 0 || componentType.isPrimitive())
+								{
+									Object parameter = convertParameterToValue(control, param, componentType);
+									if (parameter != null)
+										List.class.cast(paramList).add(parameter);
+								}
+								else
+									List.class.cast(paramList).add(null);
+							}
+							mutatorMethod.invoke(control, new Object[] { paramList });
+						}
+					}
+				}
+			}
+			else if (isValidParameterType(parameterType))
+			{	// Parameter type is Date, String, a primitive type or a Wrapper Class type
+				String param = request.getParameter(parameterName);
+				if (param.length() > 0 || parameterType.isPrimitive())
+				{
+					Object parameter = convertParameterToValue(control, param, parameterType);
+					if (parameter != null)
+						mutatorMethod.invoke(control, new Object[] { parameter });
+				}
+				else
+					mutatorMethod.invoke(control, new Object[] { null });
+			}
+		}
+		catch (Exception e)
+		{
+			request.setAttribute(String.format("%s.exception.%s", this.getClass().getPackage().getName(), parameterName), e);
+			if (null == request.getAttribute(String.format("%s.exception", this.getClass().getPackage().getName())))
+				request.setAttribute(String.format("%s.exception", this.getClass().getPackage().getName()), e);
+		}
+	}
+	
+	private Object convertParameterToValue(Control control, String param, Class<?> parameterType) throws ParseException
+	{
+		if (byte.class.isAssignableFrom(parameterType) || Byte.class.isAssignableFrom(parameterType))
+			return Byte.valueOf(param);
+		else if (short.class.isAssignableFrom(parameterType) || Short.class.isAssignableFrom(parameterType))
+			return Short.valueOf(param);
+		else if (int.class.isAssignableFrom(parameterType) || Integer.class.isAssignableFrom(parameterType))
+			return Integer.valueOf(param);
+		else if (long.class.isAssignableFrom(parameterType) || Long.class.isAssignableFrom(parameterType))
+			return Long.valueOf(param);
+		else if (float.class.isAssignableFrom(parameterType) || Float.class.isAssignableFrom(parameterType))
+			return Float.valueOf(param);
+		else if (double.class.isAssignableFrom(parameterType) || Double.class.isAssignableFrom(parameterType))
+			return Double.valueOf(param);
+		else if (boolean.class.isAssignableFrom(parameterType) || Boolean.class.isAssignableFrom(parameterType))
+			return Boolean.valueOf(param);
+		else if (char.class.isAssignableFrom(parameterType) || Character.class.isAssignableFrom(parameterType))
+			return param.charAt(0);
+		else if (BigDecimal.class.isAssignableFrom(parameterType))
+			return new BigDecimal(param);
+		else if (String.class.isAssignableFrom(parameterType))
+			return param;
+		else if (Date.class.isAssignableFrom(parameterType))
+		{
+			if (DateFormatProvider.class.isInstance(control))
+				return DateFormatProvider.class.cast(control).getDateFormat().parse(param);
+			else
+				return DateFormat.getDateInstance().parse(param);
+		}
+		else if (parameterType.isEnum())
+			return Enum.valueOf((Class<? extends Enum>)(parameterType), param);
+		else
+			return null;
+	}
+	
+	private boolean isValidParameterType(Class<?> type)
+	{
+		return (type.isPrimitive() || type.isEnum() || Date.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type) || String.class.isAssignableFrom(type)
+					|| Character.class.isAssignableFrom(type) || Boolean.class.isAssignableFrom(type) || Number.class.isAssignableFrom(type));
+	}
+	
+	private boolean isValidEnum(Class<? extends Enum> enumType, String value)
+	{
+		for (Enum<?> enumValue : enumType.getEnumConstants())
+		{
+			if (enumValue.name().equals(value))
+				return true;
+		}
+		return false;
+	}
+}

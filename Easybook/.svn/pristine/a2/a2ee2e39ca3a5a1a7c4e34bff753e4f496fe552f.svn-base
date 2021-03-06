@@ -1,0 +1,89 @@
+package ca.dmay.easybook;
+import ca.dmay.easybook.data.*;
+
+import ca.dmay.easybook.data.DataSourceFactory;
+import ca.senecacollege.prg556.limara.bean.AccountOwner;
+import ca.senecacollege.prg556.limara.bean.Material;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
+
+import ca.senecacollege.prg556.limara.bean.*;
+
+/**
+ * Servlet Filter implementation class LimaraMenuFilter
+ */
+
+//Darien May
+
+//Filter specified in web.xml
+//@WebFilter("/LimaraMenuFilter")
+public class LimaraMenuFilter implements Filter {
+
+	private DataSource ds;
+    /**
+     * Default constructor. 
+     */
+    public LimaraMenuFilter() {
+    	ds = DataSourceFactory.getDataSource();
+    }
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy() {
+
+	}
+
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest req = (HttpServletRequest)request;
+		int numReserved = 0;
+
+		try {
+			AccountOwner ao = (AccountOwner)(req.getSession().getAttribute("accountOwner"));
+			
+			Connection conn = ds.getConnection();
+			PreparedStatement findReservations = conn.prepareStatement("SELECT * FROM material WHERE account_owner_id = ?");
+			findReservations.setInt(1, ao.getId());
+			ResultSet result = findReservations.executeQuery();
+			while (result.next())
+			{
+				numReserved++;
+			}
+			
+			request.setAttribute("numReservations", numReserved);
+			request.setAttribute("firstName", ao.getFirstName());
+			request.setAttribute("lastName", ao.getLastName());
+			//request setattribute firstName, lastName
+		}
+		catch (SQLException e) {
+			throw new ServletException(e);
+		}
+		chain.doFilter(request, response);
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException {
+
+	}
+
+}

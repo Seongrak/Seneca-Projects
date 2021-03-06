@@ -1,0 +1,29 @@
+package ca.on.senecac.prg556.common;
+
+import java.text.DateFormat;
+
+/**
+ * Defines methods that all DateFormatProvider objects must implement.
+ * <p>
+ * A date format provider provides a DateFormat object to be used by the MVC ControlFilter
+ * to format dates/times on input.  Only one DateFormat object can be provided per
+ * control, thus, all date/time formats on the page tat use the built-in type conversion
+ * by the MVC ControlFilter must all use the same format. 
+ *  
+ * @author 	Wayne Bryan
+ * @version %I% %G%
+ *
+ */
+public interface DateFormatProvider
+{
+	/**
+	 * Called by the MVC ControlFilter to allow the format of a date/time input to be specified. 
+	 * <p>
+	 * The method returns DateFormat object to indicate how to parse any Date type
+	 * parameters that are input on the page.
+	 * 
+	 * @return	a DateFormat object that provides the parse format for any Date type parameters 
+	 * @see		ControlFilter
+	 */
+	public DateFormat getDateFormat();
+}

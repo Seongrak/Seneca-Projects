@@ -1,0 +1,46 @@
+package com.easybook.mainpackage.data;
+
+//Seongrak Choi
+import java.sql.SQLException;
+
+import ca.senecacollege.prg556.limara.bean.AccountOwner;
+import ca.senecacollege.prg556.limara.dao.AccountOwnerDAO;
+
+class AccountOwnerData implements AccountOwnerDAO {
+
+	public AccountOwnerData() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public AccountOwner getAccountOwner(int id) throws SQLException {
+		// TODO Auto-generated method stub
+		
+		/*
+		 * For stage 2, this method should create one of three possible library account
+		 *  owner objects based on the id provided. The method will compare the id parameter 
+		 *  against three id values hardcoded into the method. If the specified id value does
+		 *   not match up with any of the hard coded values, then the method should return null. 
+		 *   Otherwise, the method should create and return a library account owner object using 
+		 *   the given id and hardcoded first and last name values.
+		 */
+		return null;
+	}
+
+	@Override
+	public AccountOwner validateAccountOwner(String username, String password)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		
+		/*
+		 * For stage 2, this method should compare the username and password against three
+		 *  username/password values hardcoded into the method. If the specified username/password 
+		 * does not match up with any of the hardcoded values, then the method should return null. 
+		 * Otherwise, the method should return one of the three library account owner objects returned
+		 *  by the AccountOwnerData.getAccountOwner method (each matching username/password should 
+		 *  return a different one of the three library account owners).
+		 */
+		return null;
+	}
+
+}

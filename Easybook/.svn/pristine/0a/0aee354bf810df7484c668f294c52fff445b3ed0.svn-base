@@ -1,0 +1,14 @@
+package com.easybook.main.data;
+
+public class MaterialReservationDAOFactory {
+
+	public MaterialReservationDAOFactory() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	public static MaterialReservationDAO getMaterialReservationDAO() {
+		
+		return mrDAO;
+	}
+
+}

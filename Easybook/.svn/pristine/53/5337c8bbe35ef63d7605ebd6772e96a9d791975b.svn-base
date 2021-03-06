@@ -1,0 +1,52 @@
+package ca.on.senecac.prg556.common;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Defines methods that all MVC Controls must implement.
+ * <p>
+ * A control is a small Java program that runs within the MVC Control framework of a J2EE Web server. 
+ * Controls receive and respond to requests from Web clients, usually across HTTP, the HyperText Transfer 
+ * Protocol.
+ * <p>
+ * This interface defines the doLogic method to service requests.  A new instance of the Control class is
+ * instantiated for every request.  Before the doLogic method is called, any methods matching request parameter names
+ * according to the JavaBean naming convention for mutator methods are set by calling the matching mutator (set) method.  After
+ * the doLogic method is called, any methods following the JavaBean naming convention for accessor methods are
+ * called to create corresponding request attributes. 
+ *  
+ * @author 	Wayne Bryan
+ * @version %I% %G%
+ *
+ */
+public interface Control
+{
+	/**
+	 * Called by the MVC Control container to allow the control to respond to a request. 
+	 * <p>
+	 * This method is only called after the control's init() method has completed successfully.
+	 * <p>
+	 * Controls typically run inside multithreaded servlet containers that can handle multiple requests 
+	 * concurrently. Developers must be aware to synchronize access to any shared resources such as files, 
+	 * network connections, and as well as the control's class and instance variables.
+	 * <p>
+	 * The method returns a String to indicate how to proceed after the method completes.  A 
+	 * <code>null</code> value means continue along the filter chain to the next element.  A 
+	 * response of "R:<i>resource-url</i>" indicates that a client-side redirection to the resource 
+	 * URL should be performed.  A response of "D:<i>resource-url</i>" indicates that a server-side 
+	 * request dispatcher forward to the resource URL should be performed.  For any other return 
+	 * value the request is not passed to the next element in the filter chain.
+	 * 
+	 * @param 	request				the <code>HttpServletRequest</code> object that contains the client's request
+	 * @param 	response			the <code>HttpServletResponse</code> object that contains the control's response
+	 * @return						a String indicating how to proceed after the method completes. 
+	 * @throws 	ServletException 	if an exception has occurred that interferes with the control's normal operation
+	 * @throws 	IOException 		if an input or output exception occurs
+	 * @see		ControlFilter
+	 */
+	public String doLogic (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+}

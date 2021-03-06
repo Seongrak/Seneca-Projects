@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page language="java"
+        contentType="application/xhtml+xml; charset=UTF-8" pageEncoding="UTF-8" />
+    <jsp:output omit-xml-declaration="no" 
+        doctype-root-element="html"  
+        doctype-public="-//W3C//DTD XHTML 1.1//EN" 
+        doctype-system="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" />
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<link rel="stylesheet" href="style.css" type="text/css" />
+<title>Reserve Materials</title>
+</head>
+<body>
+<jsp:include page="limaramenu.jspx" />
+<!--
+<form action="reserve.jspx" method="post">
+-->
+<table>
+	<tr>
+		<td>Title of work: </td>
+		<td><input type="text" name="materialName" tabindex="1" /></td>
+		<td rowspan="0"><input class="button" type="submit" name="submitInfo" tabindex="3" /></td>
+	</tr>
+	<tr>
+		<td>Material type: </td>
+		<td>
+		<select name="matSelect" id="matSelect" tabindex="2">
+			<option value="all">All</option>
+			<option value="book">Book</option>
+			<option value="audio">Audio</option>
+			<option value="video">Video</option>
+		</select>
+		</td>
+	</tr>
+</table>
+<!-- 
+</form>
+ -->
+<p>
+<span class="errorText">Error: title can not be empty</span>
+</p>
+<hr />
+<form action="reservematerials.jspx" method="post">
+<table class="reservation">
+	<tr>
+		<th>Title</th>
+		<th>Type</th>
+	</tr>
+	<tr>
+		<td>Big Shark, Little Shark</td>
+		<td>Book</td>
+		<td>
+		<input type="hidden" name="materialName" />
+		<input type="hidden" name="isbn"  value="978-0399557286" />
+		<input type="hidden" name="matSelect"  value="book" />
+		<input name="reserve" type="submit" value="Reserve" /></td>
+	</tr>
+	<tr>
+		<td>Tyrannosaurus Rex</td>
+		<td>Book</td>
+		<td>
+		<input type="hidden" name="materialName" />
+		<input type="hidden" name="isbn" value="978-1524718664" />
+		<input type="hidden" name="matSelect"  value="book" />
+		<input name="reserve" type="submit" value="Reserve" /></td>
+	</tr>
+</table>
+</form>
+
+</body>
+</html>
+</jsp:root>

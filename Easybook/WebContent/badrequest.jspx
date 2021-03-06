@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page language="java"
+        contentType="application/xhtml+xml; charset=UTF-8" pageEncoding="UTF-8" />
+    <jsp:output omit-xml-declaration="no" 
+        doctype-root-element="html" 
+        doctype-public="-//W3C//DTD XHTML 1.1//EN" 
+        doctype-system="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" />
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- Seongrak Choi -->
+<head>
+<link rel="stylesheet" href="style.css" type="text/css" />
+<title>Error Page</title>
+</head>
+<body>
+
+<table>
+<tr>
+<td>
+<div class="return">
+<a href=".">Return</a></div>
+</td>
+</tr>
+<tr>
+<td>
+<p class="errorText">
+Sorry, your request was not valid.  Please try your request again.
+</p>
+</td>
+</tr>
+</table>
+
+
+</body>
+</html>
+</jsp:root>

@@ -1,0 +1,110 @@
+package ca.on.senecac.prg556.common;
+
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Redirects a context-root request to a specified URL.  The redirect method can be client-side redirection
+ * (<b>REDIRECT</b>) or server-side request dispatcher forwarding (<b>DISPATCH</b>).
+ *
+ * @author 	Wayne Bryan
+ * @version	%I% %G%
+ *
+ */
+public class RedirectFilter implements Filter
+{
+	private String url;
+	private boolean redirect = false;
+	private boolean dispatch = false;
+
+	/**
+	 * Default constructor.
+	 */
+	public RedirectFilter()
+	{
+		
+	}
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy()
+	{
+		
+	}
+
+	/**
+	 * Redirects context-root request to the URL specified.  The URL to redirect to is specified in the filter
+	 * initialization parameter <code>url</code> using the redirect method specified in the filter
+	 * initialization parameter <code>method</code>.  The URL is assumed to be relative to the context root.
+	 * The <code>method</code> can be either <b>REDIRECT</b> or <b>DISPATCH</b> (not case sensitive).
+	 * <p>
+	 * If <code>method</code> is <b>REDIRECT</b>, then a client-side redirect (302) is used.
+	 * <p>
+	 * If <code>method</code> is <b>DISPATCH</b>, then a server-side request dispatcher forward is used.
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
+	{
+		if (isDispatch())
+			((HttpServletRequest)request).getRequestDispatcher(getUrl()).forward(request, response);
+		else if (isRedirect())
+			((HttpServletResponse)response).sendRedirect(((HttpServletRequest)request).getContextPath() + getUrl());
+		else
+			chain.doFilter(request, response);
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException
+	{
+		String sURL = fConfig.getInitParameter("url");
+		String sMethod = fConfig.getInitParameter("method");
+		if (StringHelper.isNotNullOrEmpty(sURL) && StringHelper.isNotNullOrEmpty(sMethod))
+		{
+			setUrl(StringHelper.stringPrefix(sURL, "/"));
+			if ("DISPATCH".equals(sMethod.toUpperCase()))
+				setDispatch(true);
+			else if ("REDIRECT".equals(sMethod.toUpperCase()))
+				setRedirect(true);
+		}
+	}
+
+	private synchronized String getUrl()
+	{
+		return url;
+	}
+
+	private synchronized void setUrl(String url)
+	{
+		this.url = url;
+	}
+
+	private synchronized boolean isRedirect()
+	{
+		return redirect;
+	}
+
+	private synchronized void setRedirect(boolean redirect)
+	{
+		this.redirect = redirect;
+	}
+
+	private synchronized boolean isDispatch()
+	{
+		return dispatch;
+	}
+
+	private synchronized void setDispatch(boolean dispatch)
+	{
+		this.dispatch = dispatch;
+	}
+}

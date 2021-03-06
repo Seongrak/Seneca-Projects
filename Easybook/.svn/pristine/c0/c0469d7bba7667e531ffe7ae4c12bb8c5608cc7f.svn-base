@@ -1,0 +1,89 @@
+* {
+	font-family: sans-serif;
+}
+
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	background-color: #666666;
+}
+.menu-info {
+	display: block;
+	color: white;
+	text-align: center;
+	padding-top: 14px;
+	padding-right: 40px;
+	text-decoration: none;
+	font-size: 0.75em;
+}
+
+li {
+	float: left;
+}
+
+li a {
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 14px 20px;
+	text-decoration: none;
+}
+
+li a:hover {
+	background-color: #111;
+}
+
+.errorText {
+	color: red;
+}
+
+table {
+	
+}
+
+td {
+	padding-right: 1em;
+}
+
+.button {
+	padding: 1em;
+	padding-left: 1.5em;
+	padding-right: 1.5em;
+}
+
+select {
+	width: 100%;
+}
+
+.return { 
+	float: left; margin-left: 2px; 
+	}
+	
+.login{
+  width: 400px;
+  height: 270px;
+  top: 15%;
+  left:10%;
+  
+  position: absolute;
+  
+  border-radius:20px;
+  box-shadow: 5px 5px 15px 5px gray;
+  
+  font-size:21px;
+}
+
+.left_10{
+	position:absolute;
+	left:10%;
+}
+
+.reservation{
+	text-align: center;
+	padding-top: 14px;
+	padding-right: 40px;
+	text-decoration: none;
+	font-size: 17px;
+}

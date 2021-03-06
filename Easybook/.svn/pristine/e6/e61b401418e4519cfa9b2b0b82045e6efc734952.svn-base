@@ -1,0 +1,156 @@
+package ca.on.senecac.prg556.common;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Enumeration;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Sets the appropriate content type and adds the appropriate prelude code to the HTTP response.
+ *
+ * @author 	Wayne Bryan
+ * @version %I% %G%
+ *
+ */
+public class ContentTypeFilter implements Filter
+{
+	private int bufferSize = 32768;
+
+	/**
+	 * Default constructor.
+	 */
+	public ContentTypeFilter()
+	{
+		
+	}
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy()
+	{
+		
+	}
+
+	/**
+	 * Sets the content type and adds prelude code to the HTTP response that is appropriate for the
+	 * HTTP client.  The HTTP header fields <code>Accept</code> and <code>Accept-Charset</code>
+	 * are examined to determine the appropriate content type for the client and, if appropriate,
+	 * XHTML prelude code (including !DOCTYPE) is appended to the HTTP response.  Browser caching is
+	 * also disabled.
+	 * <p>
+	 * A default buffer size of 32768 bytes is used to buffer the response.  If a different size is
+	 * required, it can be configured using the filter initialization parameter <code>buffer-size</code>.
+	 * The value specified should be in bytes.
+	 */
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException
+	{
+		HttpServletRequest request = (HttpServletRequest)req;
+		HttpServletResponse response = (HttpServletResponse)resp;
+
+		// Get the content type that the client can accept
+		String contentType = null;
+		String charSet = null;
+		contentType = acceptsType("application/xhtml+xml", request.getHeaders("Accept"));
+		if (null == contentType)
+			contentType = acceptsType("application/xml", request.getHeaders("Accept"));
+		if (null == contentType)
+			contentType = acceptsType("text/xml", request.getHeaders("Accept"));
+		if (null == contentType)
+			contentType = acceptsType("text/html", request.getHeaders("Accept"));
+		if (null == contentType || "text/html".equals(contentType))
+		{
+			contentType = "text/html";
+			charSet = "ISO-8859-1";
+		}
+		else
+		{
+			charSet = "UTF-8";
+		}
+
+		// Get the character set that the client can accept
+		String acceptCharset = request.getHeader("Accept-Charset");
+		if (acceptCharset != null && acceptCharset.toUpperCase().indexOf(charSet) == -1) // accepted charsets do not include  that chosen for content type
+		{
+			if (acceptCharset.toUpperCase().indexOf("UTF-8") == -1) // client doesn't support UTF-8
+			{
+				charSet = "ISO-8859-1";
+			}
+			else // client does support UTF-8
+			{
+				charSet = "UTF-8";
+			}
+		}
+
+		response.setCharacterEncoding(charSet);
+
+		// Set the buffer size (default is 32kb)
+		response.setBufferSize(getBufferSize());
+
+		// getWriter gets a writer encoded for the
+		// currently set character set.  The character
+		// set cannot be changed after this function call.
+		PrintWriter out = response.getWriter();
+
+		// Emit XML headers (if necessary)
+		if (!"text/html".equals(contentType))
+		{ // not text/html, so must be xhtml
+			out.println(String.format("<?xml version=\"1.0\" encoding=\"%s\" ?>", charSet));
+			out.println("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
+		}
+		// Continue along the filter chain
+		chain.doFilter(req, resp);
+
+		// Set content type AFTER JSPX page has been buffered
+		response.setContentType(contentType);
+
+		// Prevent the browser from storing pages
+		response.setHeader("Cache-Control", "must-revalidate, no-store, no-cache");
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException
+	{
+		String sBufferSize = fConfig.getInitParameter("buffer-size");
+		try
+		{
+			if (sBufferSize != null)
+				bufferSize = Integer.parseInt(sBufferSize);
+		}
+		catch (Exception e)
+		{
+			// do nothing (i.e., use default value)
+		}
+	}
+
+	private synchronized int getBufferSize()
+	{
+		return bufferSize;
+	}
+
+	private static String acceptsType(String acceptType, Enumeration<String> eAccept)
+	{
+		while (eAccept.hasMoreElements())
+		{
+			String[] acceptTypes = eAccept.nextElement().split("\\,");
+			for (int index = 0; index < acceptTypes.length; index++)
+			{
+				if (acceptType.toLowerCase().equals(acceptTypes[index].split(";")[0].trim().toLowerCase()))
+				{
+					return acceptType;
+				}
+			}
+		}
+		return null;
+	}
+}

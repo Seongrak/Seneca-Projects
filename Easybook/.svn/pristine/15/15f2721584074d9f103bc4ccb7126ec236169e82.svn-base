@@ -1,0 +1,57 @@
+package ca.on.senecac.prg556.common;
+
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Generates a Resource Not Found response (404) for the request.
+ *
+ * @author 	Wayne Bryan
+ * @version	%I% %G%
+ *
+ */
+public class RestrictedContentFilter implements Filter
+{
+
+	/**
+	 * Default constructor.
+	 */
+	public RestrictedContentFilter()
+	{
+		
+	}
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy()
+	{
+		
+	}
+
+	/**
+	 * Sets a Resource Not Found (404) header response and returns without passing request
+	 * to the next entity in the filter chain.
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException
+	{
+		((HttpServletResponse)request).sendError(HttpServletResponse.SC_NOT_FOUND);
+		// request chain terminated here
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException
+	{
+		
+	}
+
+}

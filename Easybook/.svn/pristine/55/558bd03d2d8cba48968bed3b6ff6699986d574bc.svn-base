@@ -1,0 +1,59 @@
+package com.easybook.main;
+
+import java.io.IOException;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
+
+/**
+ * Servlet Filter implementation class ShowMaterialReservationsFilter
+ */
+
+public class ShowMaterialReservationsFilter implements Filter {
+
+    /**
+     * Default constructor. 
+     */
+    public ShowMaterialReservationsFilter() {
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see Filter#destroy()
+	 */
+	public void destroy() {
+		// TODO Auto-generated method stub
+	}
+
+	/**
+	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
+	 */
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		// TODO Auto-generated method stub
+		// place your code here
+
+		/*
+		 * If the request method is POST and the library account owner submitted using the cancel library material reservation submit button, the method should:
+Get the material id from an HTML form parameter and then get the Material object corresponding to the library account owner's reservation with the material id. If the material id is not valid (i.e., does not correspond to a valid library material object for the reservation), the method should throw a BadRequestException.. Otherwise the method should cancel the library material reservation with the material id for the library account owner.
+
+Then, whether or not the request method was POST, the method should get a list of all library material reservations for the library account owner id corresponding to one of the library account owners hardcoded in the AccountOwnerData.getAccountOwner method and then save the list into a request-scoped attribute (to be used by the showmaterialreservations.jspx page). The method should then continue along the filter chain.
+
+If a SQLException occurs, the method should wrap the exception into a ServletException and throw it out of the method.
+
+		 */
+		// pass the request along the filter chain
+		chain.doFilter(request, response);
+	}
+
+	/**
+	 * @see Filter#init(FilterConfig)
+	 */
+	public void init(FilterConfig fConfig) throws ServletException {
+		// TODO Auto-generated method stub
+	}
+
+}

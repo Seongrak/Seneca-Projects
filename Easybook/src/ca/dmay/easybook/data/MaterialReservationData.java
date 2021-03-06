@@ -1,0 +1,108 @@
+package ca.dmay.easybook.data;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.sql.DataSource;
+
+import ca.senecacollege.prg556.limara.bean.Material;
+import ca.senecacollege.prg556.limara.dao.MaterialReservationDAO;
+
+class MaterialReservationData implements MaterialReservationDAO {
+
+	private DataSource ds;
+	
+	public MaterialReservationData(DataSource ds) {
+		setDs(ds);
+	}
+	
+	public Material reserveMaterial(int accountOwnerId, String materialId) throws SQLException {
+		boolean rowReturned = false;
+		String title = "", type = "";
+		Connection conn = ds.getConnection();
+		PreparedStatement findMaterial = conn.prepareStatement("SELECT * FROM material WHERE material_id = ?");
+		findMaterial.setString(1, materialId);
+		ResultSet result = findMaterial.executeQuery();
+		if (result.next()) 
+		{
+			rowReturned = true;
+			title = result.getString("title");
+			type = result.getString("type");
+		}
+		int acctId = result.getInt("account_owner_id");
+		if (result.wasNull() && rowReturned) // if a row is returned and the account_owner_id was null
+		{
+			PreparedStatement updateStatement = conn.prepareStatement("UPDATE material SET account_owner_id = ? WHERE material_id = ?");
+			updateStatement.setInt(1, accountOwnerId);
+			updateStatement.setString(2, materialId);
+			updateStatement.executeQuery();
+			return new Material(materialId, title, type);
+		}
+		else {
+			return null;
+		}
+	}
+	
+	/*
+	public void cancelMaterialReservation(int accountOwnerId, String materialId) throws SQLException {
+		int resId = 0;
+		Connection conn = ds.getConnection();
+		PreparedStatement findMaterial = conn.prepareStatement("SELECT * FROM material WHERE material_id = ?");
+		findMaterial.setString(1, materialId);
+		ResultSet result = findMaterial.executeQuery();
+		resId = result.getInt("account_owner_id");
+		if (result.next() && resId == accountOwnerId) // if a row is returned and the account owner IDs match
+		{
+			PreparedStatement cancelStatement = conn.prepareStatement("UPDATE material SET account_owner_id = NULL WHERE material_id = ?");
+			cancelStatement.setString(1, materialId);
+		}
+	}
+	*/
+	public void cancelMaterialReservation(int accountOwnerId, String materialId) throws SQLException {
+		Connection conn = ds.getConnection();
+		PreparedStatement cancelStatement = conn.prepareStatement("UPDATE material SET account_owner_id = NULL WHERE material_id = ?");
+		cancelStatement.setString(1, materialId);
+		cancelStatement.executeUpdate();
+	}
+	
+	public Material getMaterialReservation(int accountOwnerId, String materialId) throws SQLException {
+		try (Connection conn = ds.getConnection())
+		{
+		PreparedStatement findReservation = conn.prepareStatement("SELECT * FROM material WHERE material_id = ? AND account_owner_id = ?");
+		findReservation.setString(1, materialId);
+		findReservation.setInt(2, accountOwnerId);
+		ResultSet result = findReservation.executeQuery();
+		if (result.next())
+		{
+			return new Material(materialId, result.getString("title"), result.getString("type"));
+		}
+		else
+		{
+			return null;
+		}	
+		}
+	}
+	
+	public List<Material> getMaterialReservations(int accountOwnerId) throws SQLException {
+		List<Material> matList = new ArrayList<Material>();
+		Connection conn = ds.getConnection();
+		PreparedStatement findReservations = conn.prepareStatement("SELECT * FROM material WHERE account_owner_id = ?");
+		findReservations.setInt(1, accountOwnerId);
+		ResultSet result = findReservations.executeQuery();
+		while (result.next())
+		{
+			matList.add(new Material(result.getString("material_id"), result.getString("title"), result.getString("type")));
+		}
+		// if result.next() returns false, an empty list will be returned
+		return matList;
+	}
+	
+	private void setDs(DataSource ds)
+	{
+		this.ds = ds;
+	}
+}

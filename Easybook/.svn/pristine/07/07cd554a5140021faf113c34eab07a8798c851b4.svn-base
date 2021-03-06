@@ -1,0 +1,150 @@
+package com.therockies.easybook.data;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.sql.DataSource;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Connection;
+
+
+import ca.senecacollege.prg556.limara.bean.Material;
+import ca.senecacollege.prg556.limara.dao.MaterialDAO;
+
+//Seongrak Choi
+class MaterialData implements MaterialDAO {
+
+	
+	private DataSource ds;
+	
+	MaterialData(DataSource ds)
+	{
+		setDs(ds);
+	}
+	
+	@Override
+	public List<Material> getAvailableMaterials(String title, String type)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		
+		List<Material> availableMeterials = null;
+		if(title != null && type !=null)
+		{
+			try(Connection conn = getDs().getConnection())
+			{
+				try(PreparedStatement pstmt = conn.prepareStatement("SELECT material_id,title,type FROM material WHERE account_owner_id is null AND title LIKE '%?%' AND type = ?"))
+				{
+					pstmt.setString(1, title);
+					pstmt.setString(2, type);
+					
+					try(ResultSet rslt = pstmt.executeQuery())
+					{
+						availableMeterials = new ArrayList<Material>();
+						while(rslt.next())
+						{
+							availableMeterials.add(new Material(rslt.getString("material_id"), rslt.getString("title"), rslt.getString("type")));
+						}
+					}
+					
+				}
+			}
+		}
+		else if(title == null && type !=null)
+		{
+			try(Connection conn = getDs().getConnection())
+			{
+				try(PreparedStatement pstmt = conn.prepareStatement("SELECT material_id,title,type FROM material WHERE account_owner_id is null AND type = ?"))
+				{
+					pstmt.setString(1, type);
+					
+					try(ResultSet rslt = pstmt.executeQuery())
+					{
+						availableMeterials = new ArrayList<Material>();
+						while(rslt.next())
+						{
+							availableMeterials.add(new Material(rslt.getString("material_id"), rslt.getString("title"), rslt.getString("type")));
+						}
+					}
+					
+				}
+			}
+		}
+		else if(title != null && type == null)
+		{
+			try(Connection conn = getDs().getConnection())
+			{
+				try(PreparedStatement pstmt = conn.prepareStatement("SELECT material_id,title,type FROM material WHERE account_owner_id is null AND LIKE '%?%'"))
+				{
+					pstmt.setString(1, title);
+					
+					try(ResultSet rslt = pstmt.executeQuery())
+					{
+						availableMeterials = new ArrayList<Material>();
+						while(rslt.next())
+						{
+							availableMeterials.add(new Material(rslt.getString("material_id"), rslt.getString("title"), rslt.getString("type")));
+						}
+					}
+					
+				}
+			}
+		}
+		else
+		{
+			try(Connection conn = getDs().getConnection())
+			{
+				try(PreparedStatement pstmt = conn.prepareStatement("SELECT material_id,title,type FROM material WHERE account_owner_id is null"))
+				{
+					try(ResultSet rslt = pstmt.executeQuery())
+					{
+						availableMeterials = new ArrayList<Material>();
+						while(rslt.next())
+						{
+							availableMeterials.add(new Material(rslt.getString("material_id"), rslt.getString("title"), rslt.getString("type")));
+						}
+					}
+					
+				}
+			}
+		}
+		
+		return availableMeterials;
+	}
+
+	@Override
+	public Material getMaterial(String materialID) throws SQLException {
+		// TODO Auto-generated method stub
+		
+		try(Connection conn = getDs().getConnection())
+		{
+			try(PreparedStatement pstmt = conn.prepareStatement("SELECT material_id,title,type FROM material WHERE material_id = ?"))
+			{
+				pstmt.setString(1, materialID);
+				
+				try(ResultSet rslt = pstmt.executeQuery())
+				{
+					if(rslt.next())
+					{
+						return new Material(rslt.getString("material_id"),rslt.getString("title"),rslt.getString("type"));
+					}
+					else
+						return null;
+						
+				}
+				
+			}
+		}
+	}
+
+	private DataSource getDs()
+	{
+		return ds;
+	}
+
+	private void setDs(DataSource ds)
+	{
+		this.ds = ds;
+	}
+}

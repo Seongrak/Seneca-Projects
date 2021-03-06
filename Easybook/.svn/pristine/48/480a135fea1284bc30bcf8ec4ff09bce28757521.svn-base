@@ -1,0 +1,53 @@
+package com.easybook.main.data;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import ca.senecacollege.prg556.limara.bean.Material;
+import ca.senecacollege.prg556.limara.dao.MaterialDAO;
+
+//Seongrak Choi
+class MaterialData implements MaterialDAO {
+
+	public MaterialData() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public List<Material> getAvailableMaterials(String title, String type)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		
+		MaterialData materialOne = new MaterialData();
+		MaterialData materialTwo = new MaterialData();
+
+		List<Material> availableMeterials = new ArrayList<Material>();
+		availableMeterials.add(materialOne.getMaterial("aaa"));
+		availableMeterials.add(materialTwo.getMaterial("bbb"));
+		
+		
+		return availableMeterials;
+	}
+
+	@Override
+	public Material getMaterial(String materialID) throws SQLException {
+		// TODO Auto-generated method stub
+		
+		if(("aaa").equals(materialID.toLowerCase()))
+		{
+			return new Material(materialID,"titleABC","book");
+		}
+		else if(("bbb").equals(materialID.toLowerCase()))
+		{
+			return new Material(materialID,"titleBCD","audio");
+		}
+		else if(("ccc").equals(materialID.toLowerCase()))
+		{
+			return new Material(materialID,"titleCDE","video");
+		}
+		else
+			return null;
+	}
+
+}
