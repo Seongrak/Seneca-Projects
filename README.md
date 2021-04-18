@@ -23,12 +23,12 @@
 * To login, using Oracle information, and the app will authenticate the credentials
 * C#, ASP. NET, ORACLE SQL
 
-### PRG255
+### PRG455
 * Windowform application to manage the data from the database about School, Course
 * Storing the data to an excel file in SQL statements by oledb
 * C# .NET
 
-### PRG455
+### PRG255
 * Application to keep tracking of inventroy and profits allowing the user to order supplies and sales.
 * Up to 10 different items can be tracked
 * Writing / Reading a text file
