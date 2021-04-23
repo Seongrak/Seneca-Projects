@@ -22,6 +22,7 @@
 * Providing web forms and navigation the program via using buttons and links
 * To login, using Oracle information, and the app will authenticate the credentials
 * C#, ASP. NET, ORACLE SQL
+* Group project(3 people)
 
 ### PRG455
 * Windowform application to manage the data from the database about School, Course
